@@ -1,0 +1,410 @@
+/* ============================================================ foundation */
+:root {
+  --night-0:   #070a1c;
+  --night-1:   #0e1430;
+  --night-2:   #1a2250;
+  --snow:      #f4f7ff;
+  --snow-dim:  #a9b4d4;
+  --gold:      #f6cd68;
+  --gold-deep: #c99a2e;
+  --red:       #e0384c;
+  --red-deep:  #9c1f31;
+  --pine:      #35a06a;
+
+  --ease-out:  cubic-bezier(.16, 1, .3, 1);
+  --ease-pop:  cubic-bezier(.34, 1.56, .64, 1);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body { height: 100%; }
+
+body {
+  font-family: ui-rounded, "SF Pro Rounded", "Segoe UI", Inter, system-ui, -apple-system, sans-serif;
+  color: var(--snow);
+  background:
+    radial-gradient(130% 85% at 50% -10%, var(--night-2) 0%, var(--night-1) 45%, var(--night-0) 100%);
+  min-height: 100svh;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* A soft moon glow up top, plus a warm hearth glow from below. */
+body::before,
+body::after {
+  content: "";
+  position: fixed;
+  pointer-events: none;
+  z-index: 0;
+}
+body::before {
+  inset: 0;
+  background:
+    radial-gradient(44% 30% at 50% 0%, rgba(246,205,104,.18), transparent 70%),
+    radial-gradient(70% 40% at 50% 104%, rgba(224,56,76,.16), transparent 72%);
+}
+body::after { /* vignette */
+  inset: 0;
+  background: radial-gradient(118% 85% at 50% 42%, transparent 52%, rgba(3,5,14,.72) 100%);
+}
+
+canvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+#snow     { z-index: 1; }
+#confetti { z-index: 5; }
+
+/* ================================================================ layout */
+main {
+  position: relative;
+  z-index: 3;
+  display: grid;
+  place-items: center;
+  min-height: 100svh;
+  padding: max(2rem, env(safe-area-inset-top)) 1.5rem max(2rem, env(safe-area-inset-bottom));
+}
+
+.screen {
+  display: none;
+  width: 100%;
+  max-width: 30rem;
+  text-align: center;
+}
+.screen.is-active {
+  display: block;
+  animation: screen-in .6s var(--ease-out) both;
+}
+@keyframes screen-in {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* ================================================= type */
+.eyebrow {
+  font-size: .78rem;
+  font-weight: 700;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: .9rem;
+}
+
+.title {
+  font-size: clamp(2rem, 9vw, 2.9rem);
+  font-weight: 800;
+  letter-spacing: -.02em;
+  line-height: 1.08;
+  margin-bottom: .75rem;
+  text-wrap: balance;
+}
+.title--sm { font-size: clamp(1.4rem, 5.6vw, 1.85rem); }
+
+.sub {
+  color: var(--snow-dim);
+  font-size: 1rem;
+  line-height: 1.5;
+  margin-bottom: 2rem;
+  text-wrap: pretty;
+}
+.sub--tap {
+  margin: 1.75rem 0 0;
+  font-size: .9rem;
+  letter-spacing: .04em;
+  animation: breathe 2.4s ease-in-out infinite;
+}
+@keyframes breathe { 50% { opacity: .42; } }
+
+.footnote {
+  margin-top: 1.9rem;
+  font-size: .8rem;
+  color: rgba(169,180,212,.6);
+}
+
+/* ============================================= the name buttons (roster) */
+.roster {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: .7rem;
+}
+
+.name-btn {
+  font: inherit;
+  font-size: 1.08rem;
+  font-weight: 700;
+  color: var(--snow);
+  cursor: pointer;
+  padding: .95rem 1.5rem;
+  min-height: 3.25rem;      /* comfortable thumb target */
+  border: 1px solid rgba(246,205,104,.26);
+  border-radius: 999px;
+  background: linear-gradient(170deg, rgba(255,255,255,.13), rgba(255,255,255,.04));
+  box-shadow: 0 2px 0 rgba(255,255,255,.1) inset, 0 10px 24px -12px rgba(0,0,0,.85);
+  backdrop-filter: blur(7px);
+  -webkit-backdrop-filter: blur(7px);
+  transition: transform .22s var(--ease-pop), border-color .22s, box-shadow .22s, background .22s;
+}
+.name-btn::before { content: "🎄"; margin-right: .5rem; font-size: .95em; }
+
+@media (hover: hover) {
+  .name-btn:hover {
+    transform: translateY(-3px);
+    border-color: var(--gold);
+    background: linear-gradient(170deg, rgba(246,205,104,.22), rgba(246,205,104,.06));
+    box-shadow: 0 2px 0 rgba(255,255,255,.16) inset, 0 16px 30px -14px rgba(246,205,104,.5);
+  }
+}
+.name-btn:active { transform: translateY(-1px) scale(.97); }
+.name-btn:focus-visible,
+.gift:focus-visible,
+.link-btn:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
+}
+.name-btn[disabled] { opacity: .45; cursor: progress; }
+
+/* ============================================================ the present */
+.gift {
+  position: relative;
+  display: block;
+  width: 13.5rem;
+  height: 13.5rem;
+  margin: .5rem auto 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.gift__box {
+  position: absolute;
+  inset: 0;
+  animation: float 3.4s ease-in-out infinite, nudge 4.2s ease-in-out .9s infinite;
+  transform-origin: 50% 100%;
+}
+@keyframes float { 50% { transform: translateY(-9px); } }
+/* An occasional impatient wiggle, to say "tap me". */
+@keyframes nudge {
+  0%, 74%, 100%       { rotate: 0deg; }
+  79%                 { rotate: -4.5deg; }
+  85%                 { rotate: 3.5deg; }
+  91%                 { rotate: -2deg; }
+}
+
+.gift__shadow {
+  position: absolute;
+  left: 50%;
+  bottom: -.5rem;
+  width: 9rem;
+  height: 1.4rem;
+  translate: -50% 0;
+  background: radial-gradient(50% 50%, rgba(0,0,0,.6), transparent 72%);
+  filter: blur(3px);
+  animation: shadow-pulse 3.4s ease-in-out infinite;
+}
+@keyframes shadow-pulse { 50% { transform: scale(.88); opacity: .6; } }
+
+/* box body */
+.gift__body {
+  position: absolute;
+  left: 50%;
+  bottom: 1.1rem;
+  width: 9.2rem;
+  height: 7.2rem;
+  translate: -50% 0;
+  border-radius: .55rem;
+  background:
+    linear-gradient(100deg, var(--red-deep) 0%, var(--red) 38%, #f2607a 52%, var(--red) 66%, var(--red-deep) 100%);
+  box-shadow:
+    0 1px 0 rgba(255,255,255,.25) inset,
+    0 -1.2rem 2rem -1rem rgba(0,0,0,.55) inset,
+    0 22px 34px -16px rgba(0,0,0,.8);
+}
+.gift__ribbon-v {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 1.65rem;
+  height: 100%;
+  translate: -50% 0;
+  background: linear-gradient(100deg, var(--gold-deep), var(--gold) 45%, #fff0c4 52%, var(--gold) 60%, var(--gold-deep));
+  box-shadow: 0 0 .6rem rgba(0,0,0,.25);
+}
+
+/* lid */
+.gift__lid {
+  position: absolute;
+  left: 50%;
+  bottom: 7.9rem;
+  width: 10.6rem;
+  height: 2.5rem;
+  translate: -50% 0;
+  border-radius: .5rem;
+  background:
+    linear-gradient(100deg, var(--red-deep) 0%, var(--red) 38%, #f2607a 52%, var(--red) 66%, var(--red-deep) 100%);
+  box-shadow:
+    0 1px 0 rgba(255,255,255,.3) inset,
+    0 14px 22px -12px rgba(0,0,0,.7);
+  transform-origin: 50% 100%;
+}
+/* bow */
+.gift__bow {
+  position: absolute;
+  left: 50%;
+  bottom: 1.9rem;
+  width: 3.4rem;
+  height: 2.2rem;
+  translate: -50% 0;
+}
+.gift__bow::before,
+.gift__bow::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  width: 1.95rem;
+  height: 2.2rem;
+  border-radius: 70% 70% 46% 46% / 86% 86% 24% 24%;
+  background: linear-gradient(160deg, #fff0c4, var(--gold) 42%, var(--gold-deep));
+  box-shadow: 0 6px 12px -6px rgba(0,0,0,.6);
+}
+.gift__bow::before { left: -.2rem;  rotate: -27deg; transform-origin: bottom right; }
+.gift__bow::after  { right: -.2rem; rotate:  27deg; transform-origin: bottom left; }
+
+/* the knot, drawn over both loops */
+.gift__knot {
+  position: absolute;
+  left: 50%;
+  bottom: -.15rem;
+  width: 1.15rem;
+  height: 1.15rem;
+  translate: -50% 0;
+  border-radius: 50%;
+  background: radial-gradient(circle at 34% 30%, #fff6dc, var(--gold) 52%, var(--gold-deep));
+  box-shadow: 0 3px 7px -3px rgba(0,0,0,.7);
+  z-index: 2;
+}
+
+/* ---- unwrapping ---- */
+.gift.is-shaking .gift__box { animation: shake .5s cubic-bezier(.36,.07,.19,.97) both; }
+@keyframes shake {
+  0%, 100% { rotate: 0deg;    translate: 0 0; }
+  12%      { rotate: -9deg;   translate: -6px 0; }
+  28%      { rotate: 8deg;    translate: 6px 0; }
+  44%      { rotate: -7deg;   translate: -5px 0; }
+  60%      { rotate: 6deg;    translate: 4px 0; }
+  76%      { rotate: -3.5deg; translate: -2px 0; }
+  88%      { rotate: 2deg;    translate: 1px 0; }
+}
+
+.gift.is-open .gift__box   { animation: none; }
+.gift.is-open .gift__lid   { animation: lid-off 1.05s var(--ease-out) both; }
+.gift.is-open .gift__body  { animation: body-burst 1.05s var(--ease-out) both; }
+.gift.is-open .gift__shadow{ animation: none; opacity: 0; transition: opacity .5s; }
+.gift.is-open ~ .sub--tap   { animation: none; opacity: 0; transition: opacity .3s; }
+
+/* Clear the copy out of the way so the lid has room to fly. */
+#screen-box.is-opening .eyebrow,
+#screen-box.is-opening .title {
+  opacity: 0;
+  transform: translateY(-.5rem);
+  transition: opacity .4s ease, transform .4s ease;
+}
+
+@keyframes lid-off {
+  0%   { transform: none; opacity: 1; }
+  32%  { transform: translateY(-3.6rem) rotate(-14deg) scale(1.04); opacity: 1; }
+  100% { transform: translateY(-8.4rem) rotate(-44deg) scale(.8); opacity: 0; }
+}
+@keyframes body-burst {
+  0%   { transform: scaleY(1)    scaleX(1); }
+  18%  { transform: scaleY(.82)  scaleX(1.12); }
+  48%  { transform: scaleY(1.06) scaleX(.95); filter: brightness(1.45); }
+  100% { transform: translateY(2.4rem) scaleY(.62) scaleX(.86); opacity: 0; }
+}
+
+/* A shaft of light escaping the open box. */
+.gift.is-open::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 4rem;
+  width: 8rem;
+  height: 8rem;
+  translate: -50% 0;
+  background: radial-gradient(50% 50%, rgba(246,205,104,.75), transparent 70%);
+  animation: flash .9s ease-out both;
+  pointer-events: none;
+}
+@keyframes flash {
+  0%   { opacity: 0; scale: .3; }
+  22%  { opacity: 1; scale: 1.5; }
+  100% { opacity: 0; scale: 2.6; }
+}
+
+/* ============================================================= the reveal */
+.giftee {
+  font-size: clamp(2.6rem, 15vw, 4.75rem);
+  font-weight: 900;
+  letter-spacing: -.03em;
+  line-height: 1.02;
+  margin: .35rem 0 1.5rem;
+  background: linear-gradient(175deg, #fffaf0 8%, var(--gold) 52%, var(--gold-deep) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 6px 26px rgba(246,205,104,.45));
+  text-wrap: balance;
+}
+#screen-reveal.is-active .giftee { animation: name-in 1s var(--ease-pop) both; }
+@keyframes name-in {
+  0%   { opacity: 0; transform: translateY(2.2rem) scale(.6); filter: blur(10px); }
+  65%  { opacity: 1; }
+  100% { opacity: 1; transform: none; filter: drop-shadow(0 6px 26px rgba(246,205,104,.45)); }
+}
+
+.secret {
+  font-size: .95rem;
+  color: var(--snow-dim);
+  margin-bottom: 2.25rem;
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .9rem;
+}
+
+.link-btn {
+  font: inherit;
+  font-size: .9rem;
+  font-weight: 600;
+  color: var(--snow-dim);
+  background: none;
+  border: 0;
+  padding: .5rem .75rem;
+  cursor: pointer;
+  border-radius: .5rem;
+  text-decoration: underline;
+  text-decoration-color: rgba(169,180,212,.35);
+  text-underline-offset: .22em;
+  transition: color .2s;
+}
+.link-btn:hover { color: var(--gold); }
+.link-btn--quiet { font-size: .8rem; opacity: .62; }
+
+/* ======================================================== reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+  .screen.is-active { animation: none; }
+}

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Secret Santa</title>
+<meta name="description" content="Tap your name to find out who you're buying a gift for.">
+<meta name="theme-color" content="#0b1026">
+
+<!-- Looks nice when the link is pasted into a group chat -->
+<meta property="og:title" content="🎁 Secret Santa">
+<meta property="og:description" content="Tap your name to find out who you got. Don't spoil it.">
+<meta property="og:type" content="website">
+
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎁</text></svg>">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<canvas id="snow" aria-hidden="true"></canvas>
+<canvas id="confetti" aria-hidden="true"></canvas>
+
+<main>
+  <!-- ------------------------------------------------ 1. pick your name -->
+  <section id="screen-pick" class="screen is-active">
+    <p class="eyebrow">Secret Santa</p>
+    <h1 class="title">Who are you?</h1>
+    <p class="sub">Tap your name. Nobody else will see what you get.</p>
+
+    <div id="roster" class="roster" role="group" aria-label="Choose your name"></div>
+
+    <p class="footnote">Pick carefully &mdash; it locks to your name once you open it.</p>
+  </section>
+
+  <!-- ------------------------------------------------ 2. the gift box -->
+  <section id="screen-box" class="screen">
+    <p class="eyebrow"><span id="box-greeting">Hi</span></p>
+    <h1 class="title title--sm">Your person is in here.</h1>
+
+    <button id="gift" class="gift" aria-label="Unwrap your gift to reveal the name">
+      <span class="gift__shadow" aria-hidden="true"></span>
+      <span class="gift__box" aria-hidden="true">
+        <span class="gift__lid">
+          <span class="gift__bow"><span class="gift__knot"></span></span>
+        </span>
+        <span class="gift__body">
+          <span class="gift__ribbon-v"></span>
+        </span>
+      </span>
+    </button>
+
+    <p class="sub sub--tap">Tap the present</p>
+  </section>
+
+  <!-- ------------------------------------------------ 3. the reveal -->
+  <section id="screen-reveal" class="screen">
+    <p class="eyebrow">You are buying a gift for</p>
+    <h1 id="giftee" class="giftee"></h1>
+    <p class="secret">🤫 &nbsp;Keep it to yourself.</p>
+    <div class="actions">
+      <button id="replay" class="link-btn" type="button">Replay the unwrapping</button>
+      <button id="reset" class="link-btn link-btn--quiet" type="button">Not you? Start over</button>
+    </div>
+  </section>
+
+  <!-- ------------------------------------------------ error -->
+  <section id="screen-error" class="screen">
+    <h1 class="title title--sm">Something went wrong</h1>
+    <p id="error-msg" class="sub"></p>
+    <div class="actions">
+      <button id="error-reset" class="link-btn" type="button">Start over</button>
+    </div>
+  </section>
+</main>
+
+<script src="draw.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
